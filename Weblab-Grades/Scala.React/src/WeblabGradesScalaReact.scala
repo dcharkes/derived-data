@@ -45,8 +45,8 @@ class Submission {
   }
   
   val childGrade: Signal[Option[Double]] = Strict {
-    val grades = children().map { _.grade() }.flatten
-    if (grades.length > 0)
+    val grades = children().flatMap(_.grade())
+    if (grades.nonEmpty)
       Some(grades.sum / grades.length)
     else
       None
@@ -54,13 +54,12 @@ class Submission {
   
   val childPass: Signal[Boolean] = Strict {
     val passes = children().map { _.pass() }
-    Functions.conjuction(passes)
+    Functions.conjunction(passes)
   }
 }
 
 object Functions {
-
-  def conjuction(input: List[Boolean]): Boolean = {
-    input.foldRight(true)((a, b) => a && b)
+  def conjunction(input: List[Boolean]): Boolean = {
+    input.forall(b => b)
   }
 }
