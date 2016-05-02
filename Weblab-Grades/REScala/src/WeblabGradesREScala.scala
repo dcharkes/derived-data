@@ -1,5 +1,4 @@
 import rescala._
-import rescala.events._
 import makro.SignalMacro.{ SignalM => Signal }
 
 object WeblabGradesREScala extends App {
