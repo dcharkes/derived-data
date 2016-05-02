@@ -1,0 +1,11 @@
+/bin/
+.cache-main
+.idea/workspace.xml
+.idea/tasks.xml
+target/
+lib_managed/
+src_managed/
+project/boot/
+.history
+.cache
+.idea/libraries
