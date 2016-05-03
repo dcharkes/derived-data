@@ -95,4 +95,6 @@ To get the i3QL dependency working, one needs to locally build a certain version
       $ cd i3Ql
       $ git checkout master
       $ sbt publish-local
+
+To run the code `sbt run` or in IntelliJ a sbt task `run` (running as application in IntelliJ doesn't work).
  */
