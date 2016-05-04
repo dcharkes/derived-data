@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module external.linked.project.id="weblabgradesi3ql" external.linked.project.path="$MODULE_DIR$/../.." external.root.project.path="$MODULE_DIR$/../.." external.system.id="SBT" type="JAVA_MODULE" version="4">
+<module external.linked.project.id="i3ql" external.linked.project.path="$MODULE_DIR$/../.." external.root.project.path="$MODULE_DIR$/../.." external.system.id="SBT" type="JAVA_MODULE" version="4">
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/../../target/scala-2.10/classes" />
     <output-test url="file://$MODULE_DIR$/../../target/scala-2.10/test-classes" />
@@ -18,14 +18,10 @@
       <sourceFolder url="file://$MODULE_DIR$/../../src/test/resources" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/../../target/scala-2.10/resource_managed/test" type="java-test-resource" />
       <excludeFolder url="file://$MODULE_DIR$/../../target" />
-      <excludeFolder url="file://$MODULE_DIR$/../../target/resolution-cache" />
-      <excludeFolder url="file://$MODULE_DIR$/../../target/scala-2.10" />
-      <excludeFolder url="file://$MODULE_DIR$/../../target/scala-2.11" />
-      <excludeFolder url="file://$MODULE_DIR$/../../target/streams" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="SBT: com.google.guava:guava:19.0:jar" level="project" />
+    <orderEntry type="library" name="SBT: EPFL:lms_2.10:0.3-SNAPSHOT:jar" level="project" />
     <orderEntry type="library" name="SBT: org.scalatest:scalatest_2.10:2.1.2:jar" level="project" />
     <orderEntry type="library" name="SBT: org.scala-lang.virtualized:scala-reflect:2.10.2:jar" level="project" />
     <orderEntry type="library" name="SBT: org.scala-lang.virtualized:scala-library:2.10.2:jar" level="project" />
@@ -38,6 +34,6 @@
     <orderEntry type="library" name="SBT: de.tud.cs.st:idb-runtime-compiler_2.10:0.0.1:jar" level="project" />
     <orderEntry type="library" name="SBT: de.tud.cs.st:idb-intermediate-representation_2.10:0.0.1:jar" level="project" />
     <orderEntry type="library" name="SBT: de.tud.cs.st:idb-annotations_2.10:0.0.1:jar" level="project" />
-    <orderEntry type="library" name="SBT: EPFL:lms_2.10:0.3-SNAPSHOT:jar" level="project" />
+    <orderEntry type="library" name="SBT: com.google.guava:guava:19.0:jar" level="project" />
   </component>
 </module>
