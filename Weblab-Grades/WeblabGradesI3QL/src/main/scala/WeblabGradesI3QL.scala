@@ -3,73 +3,86 @@ import java.util.{Calendar, Date}
 import idb.syntax.iql._
 import idb.syntax.iql.IR._
 import idb.SetTable
+import idb.functions.AVG
+
+import scala.reflect.SourceContext
+import scala.Some
+import scala.virtualization.lms.common.{Base, BaseExp}
+
+// make sure we don't use LMS Some's
+
 
 object WeblabGradesI3QL {
+  type Id = Int
+  type Submission = (Id, Option[Id], Option[Double])
 
-  val airport = SetTable.empty[Airport]
-  val flight = SetTable.empty[Flight]
+  val submission = SetTable.empty[Submission]
 
-  val q = (
-    SELECT ((s: Rep[String]) => s,
-      COUNT(*))
-      FROM (airport, airport, flight)
-      WHERE ((a1, a2, f) =>
-      f.from == a1.id AND
-        f.to == a2.id AND
-        a2.code == "PDX" AND
-        f.takeoff >= new Date(2014, 01, 01) AND
-        f.takeoff < new Date(2015, 01, 01))
-      GROUP BY ((a1: Rep[Airport], a2: Rep[Airport], f: Rep[Flight]) => a1.city)
+  val submissionParent: Relation[(Submission, Submission)] = (
+    SELECT(*)
+      FROM(submission, submission)
+      WHERE ((sChild: Rep[Submission], sParent: Rep[Submission]) =>
+      (sChild._2.isDefined AND
+        sChild._2.get == sParent._1))
     )
+  val submissionParentMaterialized = submissionParent.asMaterialized
 
+  val submissionChildGrade: Relation[(Id, Int)] = (
+    SELECT((s: Rep[Option[Int]]) => s.get, SUM((s: Rep[Submission]) => s._3.get.toInt)) //SUM of ints, as AVG and doubles are not available. Note that toInt also needs a fix in the i3QL lib
+      FROM (submission)
+      WHERE ((s: Rep[Submission]) => s._3.isDefined)
+      GROUP BY((s: Rep[Submission]) => s._2)
+    )
+  val submissionChildGradeMaterialized = submissionChildGrade.asMaterialized
 
-  def initAirports(): Unit = {
-    airport += Airport(1, "AMS", "Amsterdam")
-    airport += Airport(2, "BOS", "Boston")
-    airport += Airport(3, "SFO", "San Francisco")
-    airport += Airport(4, "NRT", "Tokyo")
-    airport += Airport(5, "PDX", "Portland")
-  }
-
-
-  def initFlights(): Unit = {
-    for (d <- 1 to 360)
-      flight += Flight(1, 5, new Date(2014,  1,  d, 10,  0))
-
-    for (d <- 1 to 349)
-      flight += Flight(2, 5, new Date(2014, 1, d, 17,  5))
-    flight += Flight(2, 5, new Date(2014, 12, 31, 17,  5))
-
-    for (d <- 1 to 3467)
-      flight += Flight(3, 5, new Date(2014, 1, 1, d,  0))
-
-    for (d <- 1 to 349)
-      flight += Flight(4, 5, new Date(2014, 1, d, 16,  0))
-  }
-
+  //  def gradeToPass(g: Option[Double]): Boolean = { // how to lift this to Reps?
+  //    g match {
+  //      case None => false
+  //      case Some(g) => g >= 5.5
+  //    }
+  //  }
+  //
+  //  val submissionPass = (
+  //    SELECT((s: Rep[Submission]) => (s._1, gradeToPass(s._3)))
+  //      FROM (submission)
+  //      WHERE ((s: Rep[Submission]) => true)
+  //    )
+  //  val submissionPassMaterialized = submissionPass.asMaterialized
 
   def main(args: Array[String]): Unit = {
     import Predef.println
 
-    val result = q.asMaterialized
-    result.foreach(println(_))
+    val mathAlice = new Submission(1, None, None)
+    val examAlice = new Submission(2, Some(1), Some(7.0))
+    val labAlice = new Submission(3, Some(1), None)
+    val lab1Alice = new Submission(4, Some(3), Some(8.0))
+    val lab2Alice = new Submission(5, Some(3), Some(9.0))
 
-
-    initAirports()
-    initFlights()
-
-    println("Initial flights:")
-    result.foreach(println(_))
-
-    println()
-    flight += Flight(3, 5, new Date(2014,  9, 14, 20, 15))
-    println("Updated flights:")
-    result.foreach(println(_))
+    submission += mathAlice
+    submission += examAlice
+    submission += labAlice
+    submission += lab1Alice
+    submission += lab2Alice
 
     println()
-    flight ~= Flight(2, 5, new Date(2014, 12, 31, 17,  5)) -> Flight(2, 5, new Date(2015,  1,  1, 11,  5))
-    println("Updated flights (2):")
-    result.foreach(println(_))
+    println("Submissions:")
+    submission.foreach(println(_))
+
+    println()
+    println("Submission Parents:")
+    submissionParent.foreach(println(_))
+
+    println()
+    println("Submissions Parents (2):")
+    submissionParentMaterialized.foreach(println(_))
+
+    println()
+    println("Child Grades:")
+    submissionChildGradeMaterialized.foreach(println(_))
+
+    //    println()
+    //    println("Pass:")
+    //    submissionPassMaterialized.foreach(println(_))
   }
 }
 

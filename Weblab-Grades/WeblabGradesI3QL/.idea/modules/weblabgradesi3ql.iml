@@ -26,18 +26,18 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="SBT: com.google.guava:guava:19.0:jar" level="project" />
-    <orderEntry type="library" name="SBT: EPFL:lms_2.10:0.3-SNAPSHOT:jar" level="project" />
-    <orderEntry type="library" name="SBT: de.tud.cs.st:idb-annotations_2.10:0.0.1:jar" level="project" />
-    <orderEntry type="library" name="SBT: de.tud.cs.st:idb-intermediate-representation_2.10:0.0.1:jar" level="project" />
-    <orderEntry type="library" name="SBT: de.tud.cs.st:idb-runtime-compiler_2.10:0.0.1:jar" level="project" />
-    <orderEntry type="library" name="SBT: de.tud.cs.st:idb-runtime_2.10:0.0.1:jar" level="project" />
-    <orderEntry type="library" name="SBT: de.tud.cs.st:idb-syntax-iql_2.10:0.0.1:jar" level="project" />
-    <orderEntry type="library" name="SBT: de.tud.cs.st.idb:idb-schema-examples_2.10:0.0.1:jar" level="project" />
-    <orderEntry type="library" name="SBT: org.scala-lang:scala-library:2.10.3:jar" level="project" />
-    <orderEntry type="library" name="SBT: org.scala-lang:scala-reflect:2.10.3:jar" level="project" />
-    <orderEntry type="library" name="SBT: org.scala-lang.virtualized:scala-compiler:2.10.2:jar" level="project" />
-    <orderEntry type="library" name="SBT: org.scala-lang.virtualized:scala-library:2.10.2:jar" level="project" />
-    <orderEntry type="library" name="SBT: org.scala-lang.virtualized:scala-reflect:2.10.2:jar" level="project" />
     <orderEntry type="library" name="SBT: org.scalatest:scalatest_2.10:2.1.2:jar" level="project" />
+    <orderEntry type="library" name="SBT: org.scala-lang.virtualized:scala-reflect:2.10.2:jar" level="project" />
+    <orderEntry type="library" name="SBT: org.scala-lang.virtualized:scala-library:2.10.2:jar" level="project" />
+    <orderEntry type="library" name="SBT: org.scala-lang.virtualized:scala-compiler:2.10.2:jar" level="project" />
+    <orderEntry type="library" name="SBT: org.scala-lang:scala-reflect:2.10.3:jar" level="project" />
+    <orderEntry type="library" name="SBT: org.scala-lang:scala-library:2.10.3:jar" level="project" />
+    <orderEntry type="library" name="SBT: de.tud.cs.st.idb:idb-schema-examples_2.10:0.0.1:jar" level="project" />
+    <orderEntry type="library" name="SBT: de.tud.cs.st:idb-syntax-iql_2.10:0.0.1:jar" level="project" />
+    <orderEntry type="library" name="SBT: de.tud.cs.st:idb-runtime_2.10:0.0.1:jar" level="project" />
+    <orderEntry type="library" name="SBT: de.tud.cs.st:idb-runtime-compiler_2.10:0.0.1:jar" level="project" />
+    <orderEntry type="library" name="SBT: de.tud.cs.st:idb-intermediate-representation_2.10:0.0.1:jar" level="project" />
+    <orderEntry type="library" name="SBT: de.tud.cs.st:idb-annotations_2.10:0.0.1:jar" level="project" />
+    <orderEntry type="library" name="SBT: EPFL:lms_2.10:0.3-SNAPSHOT:jar" level="project" />
   </component>
 </module>
