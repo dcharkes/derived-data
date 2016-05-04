@@ -1,24 +1,49 @@
 import rescala._
-import makro.SignalMacro.{ SignalM => Signal }
+import makro.SignalMacro.{SignalM => Signal}
 
 object WeblabGradesREScala extends App {
 
   val mathAlice = new Submission()
   val examAlice = new Submission()
   val labAlice = new Submission()
+  val lab1Alice = new Submission()
+  val lab2Alice = new Submission()
   mathAlice.children() = List(examAlice, labAlice)
-  examAlice.manualGrade() = Some(7.0)
-  labAlice.manualGrade() = Some(8.0)
+  labAlice.children() = List(lab1Alice, lab2Alice)
+  examAlice.answer() = "Good"
+  examAlice.manualGrade() = Some(8.0)
+  lab1Alice.answer() = "Perfect"
+  lab1Alice.manualGrade() = Some(10.0)
+  lab2Alice.answer() = "Sufficient"
+  lab2Alice.manualGrade() = Some(6.0)
+  val mathBob = new Submission()
+  val examBob = new Submission()
+  val labBob = new Submission()
+  val lab1Bob = new Submission()
+  val lab2Bob = new Submission()
+  mathBob.children() = List(examBob, labBob)
+  labBob.children() = List(lab1Bob, lab2Bob)
+  examBob.answer() = "Very Good"
+  examBob.manualGrade() = Some(9.0)
+  lab1Bob.answer() = "Insufficient"
+  lab1Bob.manualGrade() = Some(3.0)
+  lab2Bob.answer() = "Perfect"
+  lab2Bob.manualGrade() = Some(10.0)
 
+  println("Alice")
   println(mathAlice.grade.get)
   println(mathAlice.pass.get)
-  println(mathAlice.childGrade.get)
-  println(mathAlice.childPass.get)
+  println()
+  println("Bob")
+  println(mathBob.grade.get)
+  println(mathBob.pass.get)
 
 }
 
 class Submission {
   val children: VarSynt[List[Submission]] = Var(Nil)
+
+  val answer: VarSynt[String] = Var("")
 
   val manualGrade: VarSynt[Option[Double]] = Var(None)
 
@@ -29,12 +54,14 @@ class Submission {
     else
       None
   }
-  
+
   val childPass: DependentSignal[Boolean] = Signal {
-    val passes = children().map { _.pass() }
+    val passes = children().map {
+      _.pass()
+    }
     Functions.conjunction(passes)
   }
-  
+
   val grade: DependentSignal[Option[Double]] = Signal {
     manualGrade() match {
       case Some(g) => Some(g)
@@ -45,10 +72,10 @@ class Submission {
           None
     }
   }
-  
+
   val pass: DependentSignal[Boolean] = Signal {
     grade() match {
-      case None    => false
+      case None => false
       case Some(g) => g >= 5.5
     }
   }

@@ -18,22 +18,36 @@ data
     children =
       examAlice{
         answer = "Good"
-        grade = 7.0
-      },
-      practicalAlice{
-        answer = "Great"
         grade = 8.0
+      },
+      labAlice{
+        children =
+          lab1Alice{
+            answer = "Perfect"
+            grade = 10.0
+          },
+          lab2Alice{
+            answer = "Sufficient"
+            grade = 6.0
+          }
       }
   }
   mathBob: Submission {
     children =
       examBob{
-        answer = "Bad"
-        grade = 3.0
+        answer = "Very Good"
+        grade = 9.0
       },
-      practicalBob{
-        answer = "Perfect"
-        grade = 10.0
+      labBob{
+        children =
+          lab1Bob{
+            answer = "Insufficient"
+            grade = 3.0
+          },
+          lab2Bob{
+            answer = "Perfect"
+            grade = 10.0
+          }
       }
   }
 
