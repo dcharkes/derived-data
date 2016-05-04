@@ -1,4 +1,4 @@
-module WeblabGradeIceDustWebDSL
+module WeblabGradesIceDustWebDSL
 
 model
 
