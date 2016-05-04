@@ -63,10 +63,11 @@ class Submission {
   }
 
   val pass: Signal[Boolean] = Strict {
-    grade() match {
+    val gradePass = grade() match {
       case None => false
       case Some(g) => g >= 5.5
     }
+    gradePass && childPass()
   }
 
   val childGrade: Signal[Option[Double]] = Strict {
