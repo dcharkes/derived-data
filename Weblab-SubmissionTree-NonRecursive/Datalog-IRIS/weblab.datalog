@@ -1,0 +1,69 @@
+student('Alice').
+student('Bob').
+assignment('math').
+assignment('exam').
+assignment('lab').
+assignment('lab1').
+assignment('lab2').
+assignmentParent('exam','math').
+assignmentParent('lab','math').
+assignmentParent('lab1','lab').
+assignmentParent('lab2','lab').
+submission('mathAlice').
+submission('examAlice').
+submission('labAlice').
+submission('lab1Alice').
+submission('lab2Alice').
+submission('mathBob').
+submission('examBob').
+submission('labBob').
+submission('lab1Bob').
+submission('lab2Bob').
+submissionStudent('mathAlice','Alice').
+submissionStudent('examAlice','Alice').
+submissionStudent('labAlice','Alice').
+submissionStudent('lab1Alice','Alice').
+submissionStudent('lab2Alice','Alice').
+submissionStudent('mathBob','Bob').
+submissionStudent('examBob','Bob').
+submissionStudent('labBob','Bob').
+submissionStudent('lab1Bob','Bob').
+submissionStudent('lab2Bob','Bob').
+submissionAssignment('mathAlice','math').
+submissionAssignment('examAlice','exam').
+submissionAssignment('labAlice','lab').
+submissionAssignment('lab1Alice','lab1').
+submissionAssignment('lab2Alice','lab2').
+submissionAssignment('mathBob','math').
+submissionAssignment('examBob','exam').
+submissionAssignment('labBob','lab').
+submissionAssignment('lab1Bob','lab1').
+submissionAssignment('lab2Bob','lab2').
+
+submissionParent(?s1,?s2) :-
+  submissionAssignment(?s1,?a1),
+  submissionAssignment(?s2,?a2),
+  assignmentParent(?a2,?a1),
+  submissionStudent(?s1,?st),
+  submissionStudent(?s2,?st).
+
+?-submissionParent(?x, ?y).
+
+/*
+run on http://iris-reasoner.org/demo
+
+result:
+
+Init time: 22ms
+----------------------------------
+Query:      ?- submissionParent(?x, ?y). ==>> 8 rows in 0ms
+Variables:  ?x, ?y
+('mathAlice', 'examAlice')
+('mathAlice', 'labAlice')
+('labAlice', 'lab1Alice')
+('labAlice', 'lab2Alice')
+('mathBob', 'examBob')
+('mathBob', 'labBob')
+('labBob', 'lab1Bob')
+('labBob', 'lab2Bob')
+*/
