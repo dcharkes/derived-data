@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SubmissionTree:MyContainer xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:SubmissionTree="http://submissiontree.ecore">
+  <students name="Alice" submissions="//@assignments.0/@submissions.0 //@assignments.0/@children.0/@submissions.0 //@assignments.0/@children.1/@submissions.0 //@assignments.0/@children.1/@children.0/@submissions.0 //@assignments.0/@children.1/@children.1/@submissions.0"/>
+  <students name="Bob" submissions="//@assignments.0/@submissions.1 //@assignments.0/@children.0/@submissions.1 //@assignments.0/@children.1/@submissions.1 //@assignments.0/@children.1/@children.0/@submissions.1 //@assignments.0/@children.1/@children.1/@submissions.1"/>
+  <assignments title="Math">
+    <children title="Exam">
+      <submissions student="//@students.0"/>
+      <submissions student="//@students.1"/>
+    </children>
+    <children title="Lab">
+      <children title="Lab1">
+        <submissions student="//@students.0"/>
+        <submissions student="//@students.1"/>
+      </children>
+      <children title="Lab2">
+        <submissions student="//@students.0"/>
+        <submissions student="//@students.1"/>
+      </children>
+      <submissions student="//@students.0"/>
+      <submissions student="//@students.1"/>
+    </children>
+    <submissions student="//@students.0"/>
+    <submissions student="//@students.1"/>
+  </assignments>
+</SubmissionTree:MyContainer>
