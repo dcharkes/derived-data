@@ -1,0 +1,11 @@
+package submissiontree
+
+import "http://submissiontree.ecore"
+
+pattern submissionParent(S1 : Submisison, S2 : Submisison) {
+	Submisison.assignment(S1, A1);
+	Submisison.assignment(S2, A2);
+	Assignment.parent(A1, A2);
+	Submisison.student(S1, S);
+	Submisison.student(S2, S);
+}

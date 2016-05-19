@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: SubmissionTree.query
+Bundle-SymbolicName: SubmissionTree.query;singleton:=true
+Bundle-Version: 0.0.1.qualifier
+Export-Package: submissiontree,
+ submissiontree.util
+Require-Bundle: org.eclipse.emf.ecore,
+ org.eclipse.incquery.runtime,
+ org.eclipse.xtext.xbase.lib
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: org.apache.log4j
