@@ -2,10 +2,10 @@ package submissiontree
 
 import "http://submissiontree.ecore"
 
-pattern submissionParent(S1 : Submisison, S2 : Submisison) {
-	Submisison.assignment(S1, A1);
-	Submisison.assignment(S2, A2);
+pattern submissionParent(S1 : Submission, S2 : Submission) {
+	Submission.assignment(S1, A1);
+	Submission.assignment(S2, A2);
 	Assignment.parent(A1, A2);
-	Submisison.student(S1, S);
-	Submisison.student(S2, S);
+	Submission.student(S1, S);
+	Submission.student(S2, S);
 }

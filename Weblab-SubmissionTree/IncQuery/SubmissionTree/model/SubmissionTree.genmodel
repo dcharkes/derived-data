@@ -13,11 +13,11 @@
       <genFeatures children="true" createChild="true" propertySortChoices="true" ecoreFeature="ecore:EReference SubmissionTree.ecore#//Assignment/children"/>
       <genFeatures children="true" createChild="true" propertySortChoices="true" ecoreFeature="ecore:EReference SubmissionTree.ecore#//Assignment/submissions"/>
     </genClasses>
-    <genClasses ecoreClass="SubmissionTree.ecore#//Submisison">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute SubmissionTree.ecore#//Submisison/answer"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute SubmissionTree.ecore#//Submisison/manualGrade"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference SubmissionTree.ecore#//Submisison/student"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference SubmissionTree.ecore#//Submisison/assignment"/>
+    <genClasses ecoreClass="SubmissionTree.ecore#//Submission">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute SubmissionTree.ecore#//Submission/answer"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute SubmissionTree.ecore#//Submission/manualGrade"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference SubmissionTree.ecore#//Submission/student"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference SubmissionTree.ecore#//Submission/assignment"/>
     </genClasses>
     <genClasses ecoreClass="SubmissionTree.ecore#//Student">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute SubmissionTree.ecore#//Student/name"/>
