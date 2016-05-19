@@ -10,8 +10,8 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute SubmissionTree.ecore#//Assignment/title"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute SubmissionTree.ecore#//Assignment/question"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference SubmissionTree.ecore#//Assignment/parent"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference SubmissionTree.ecore#//Assignment/children"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference SubmissionTree.ecore#//Assignment/submissions"/>
+      <genFeatures children="true" createChild="true" propertySortChoices="true" ecoreFeature="ecore:EReference SubmissionTree.ecore#//Assignment/children"/>
+      <genFeatures children="true" createChild="true" propertySortChoices="true" ecoreFeature="ecore:EReference SubmissionTree.ecore#//Assignment/submissions"/>
     </genClasses>
     <genClasses ecoreClass="SubmissionTree.ecore#//Submisison">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute SubmissionTree.ecore#//Submisison/answer"/>
@@ -22,6 +22,10 @@
     <genClasses ecoreClass="SubmissionTree.ecore#//Student">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute SubmissionTree.ecore#//Student/name"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference SubmissionTree.ecore#//Student/submissions"/>
+    </genClasses>
+    <genClasses ecoreClass="SubmissionTree.ecore#//MyContainer">
+      <genFeatures children="true" createChild="true" propertySortChoices="true" ecoreFeature="ecore:EReference SubmissionTree.ecore#//MyContainer/students"/>
+      <genFeatures children="true" createChild="true" propertySortChoices="true" ecoreFeature="ecore:EReference SubmissionTree.ecore#//MyContainer/assignments"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>
