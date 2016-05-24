@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Rust &lt;WeblabGradesNonRecursive&gt;">
+    <CLASSES>
+      <root url="jar:///usr/local/lib/rust/rust-1.8.0-src.zip!/rust-1.8.0/src/libstd" />
+      <root url="jar:///usr/local/lib/rust/rust-1.8.0-src.zip!/rust-1.8.0/src/libcore" />
+      <root url="jar:///usr/local/lib/rust/rust-1.8.0-src.zip!/rust-1.8.0/src/libcollections" />
+      <root url="jar:///usr/local/lib/rust/rust-1.8.0-src.zip!/rust-1.8.0/src/liballoc" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
