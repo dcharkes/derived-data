@@ -1,5 +1,5 @@
 <component name="libraryTable">
-  <library name="Rust &lt;WeblabGradesNonRecursive&gt;">
+  <library name="Rust &lt;weblab_grades_nonrecursive&gt;">
     <CLASSES>
       <root url="jar:///usr/local/lib/rust/rust-1.8.0-src.zip!/rust-1.8.0/src/libstd" />
       <root url="jar:///usr/local/lib/rust/rust-1.8.0-src.zip!/rust-1.8.0/src/libcore" />

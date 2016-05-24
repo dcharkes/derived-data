@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/WeblabGradesNonRecursive.iml" filepath="$PROJECT_DIR$/WeblabGradesNonRecursive.iml" />
+      <module fileurl="file://$PROJECT_DIR$/weblab_grades_nonrecursive.iml" filepath="$PROJECT_DIR$/weblab_grades_nonrecursive.iml" />
     </modules>
   </component>
 </project>

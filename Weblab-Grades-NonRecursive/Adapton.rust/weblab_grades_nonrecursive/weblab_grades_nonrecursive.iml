@@ -5,7 +5,7 @@
     <content url="file://$MODULE_DIR$" />
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Cargo &lt;WeblabGradesNonRecursive&gt;" level="project" />
-    <orderEntry type="library" name="Rust &lt;WeblabGradesNonRecursive&gt;" level="project" />
+    <orderEntry type="library" name="Rust &lt;weblab_grades_nonrecursive&gt;" level="project" />
+    <orderEntry type="library" name="Cargo &lt;weblab_grades_nonrecursive&gt;" level="project" />
   </component>
 </module>
