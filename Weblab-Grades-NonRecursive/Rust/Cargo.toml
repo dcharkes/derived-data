@@ -1,0 +1,6 @@
+[package]
+name = "weblab_grades_nonrecursive"
+version = "0.1.0"
+authors = ["Daco Harkes <dc.harkes@gmail.com>"]
+
+[dependencies]
