@@ -7,8 +7,18 @@
  * More documentation on Rc and RefCell: http://manishearth.github.io/blog/2015/05/27/wrapper-types-in-rust-choosing-your-guarantees/
  */
 
+/*
+ * Adapton requires Rust nigthly
+ */
+
+// not using Adapton yet
+#[macro_use] extern crate adapton ;
+
 use std::rc::Rc;
 use std::cell::RefCell;
+
+use adapton::engine::* ;
+use adapton::macros::* ;
 
 fn main() {
     let math_alice = Submission1::new(None, None);
