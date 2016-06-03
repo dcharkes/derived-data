@@ -1,0 +1,32 @@
+addblock '
+submission1(x) -> string(x).
+submission2(x) -> string(x).
+submission3(x) -> string(x).
+parent2(x, y) -> string(x), string(y).
+parent3(x, y) -> string(x), string(y).
+manualGrade1[s] = v -> string(s), float(v).
+manualGrade2[s] = v -> string(s), float(v).
+manualGrade3[s] = v -> string(s), float(v).
+'
+
+addblock '
+childGrade2[s2] = value <- agg<<value=total(g)>> parent3(s3,s2), manualGrade3[s3]=g.
+'
+
+exec '
++submission1("mathAlice").
++submission2("examAlice").
++submission2("labAlice").
++submission3("lab1Alice").
++submission3("lab2Alice").
++parent2("examAlice", "mathAlice").
++parent2("labAlice", "mathAlice").
++parent3("lab1Alice", "labAlice").
++parent3("lab2Alice", "labAlice").
+
++manualGrade2["examAlice"]=8.0f.
++manualGrade3["lab1Alice"]=10.0f.
++manualGrade3["lab2Alice"]=6.0f.
+'
+
+print childGrade2
