@@ -1,35 +1,22 @@
 addblock '
-submission1(x) -> string(x).
-submission2(x) -> string(x).
-submission3(x) -> string(x).
-parent2(x, y) -> string(x), string(y).
-parent3(x, y) -> string(x), string(y).
-manualGrade1[s] = v -> string(s), float(v).
-manualGrade2[s] = v -> string(s), float(v).
-manualGrade3[s] = v -> string(s), float(v).
-
-grade3[s3] = v -> string(s3), float(v).
-pass3[s3] = v -> string(s3), boolean(v).
-childGrade2total[s2] = v -> string(s2), float(v).
-childGrade2count[s2] = v -> string(s2), int(v).
-childGrade2[s2] = v -> string(s2), float(v).
-childPass2truePartial[s2] = v -> string(s2), int(v).
-childPass2true[s2] = v -> string(s2), int(v).
-childPass2countPartial[s2] = v -> string(s2), int(v).
-childPass2count[s2] = v -> string(s2), int(v).
-childPass2[s2] = v -> string(s2), boolean(v).
-grade2[s2] = v -> string(s2), float(v).
-pass2[s2] = v -> string(s2), boolean(v).
-childGrade1total[s1] = v -> string(s1), float(v).
-childGrade1count[s1] = v -> string(s1), int(v).
-childGrade1[s1] = v -> string(s1), float(v).
-childPass1truePartial[s1] = v -> string(s1), int(v).
-childPass1true[s1] = v -> string(s1), int(v).
-childPass1countPartial[s1] = v -> string(s1), int(v).
-childPass1count[s1] = v -> string(s1), int(v).
-childPass1[s1] = v -> string(s1), boolean(v).
-grade1[s1] = v -> string(s1), float(v).
-pass1[s1] = v -> string(s1), boolean(v).
+submission1(s1), submission1id(s1:id) -> string(id).
+submission2(s2), submission2id(s2:id) -> string(id).
+submission3(s3), submission3id(s3:id) -> string(id).
+parent2(s2, s1) -> submission2(s2), submission1(s1).
+parent3(s3, s2) -> submission3(s3), submission2(s2).
+manualGrade1[s] = v -> submission1(s), float(v).
+manualGrade2[s] = v -> submission2(s), float(v).
+manualGrade3[s] = v -> submission3(s), float(v).
+grade1[s1] = v -> submission1(s1), float(v).
+grade2[s2] = v -> submission2(s2), float(v).
+grade3[s3] = v -> submission3(s3), float(v).
+pass1[s1] = v -> submission1(s1), boolean(v).
+pass2[s2] = v -> submission2(s2), boolean(v).
+pass3[s3] = v -> submission3(s3), boolean(v).
+childGrade1[s1] = v -> submission1(s1), float(v).
+childGrade2[s2] = v -> submission2(s2), float(v).
+childPass1[s1] = v -> submission1(s1), boolean(v).
+childPass2[s2] = v -> submission2(s2), boolean(v).
 
 grade3[s3] = value <- manualGrade3[s3]=value.
 
@@ -39,68 +26,52 @@ childGrade2total[s2] = value <- agg<<value=total(g)>> parent3(s3,s2), manualGrad
 childGrade2count[s2] = value <- agg<<value=count()>> parent3(s3,s2), manualGrade3[s3]=_.
 childGrade2[s2] = value <- childGrade2total(s2,t), childGrade2count(s2,c), cf=int:float:convert[c], value=float:divide[t, cf].
 
-// childPass2partial[s2] = value <- agg<<value=and(g)>> parent3(s3,s2), pass3[s3]=g. // Internal error: Not implemented: Aggregation function and.
-childPass2truePartial[s2] = value <- agg<<value=count()>> parent3(s3,s2), pass3[s3]=true.
-childPass2true[s2] = value <- childPass2truePartial[s2]=value.
-childPass2true[s2] = 0 <- submission2(s2), !childPass2truePartial(s2,_).
-childPass2countPartial[s2] = value <- agg<<value=count()>> parent3(s3,s2), pass3[s3]=_.
-childPass2count[s2] = value <- childPass2countPartial[s2]=value.
-childPass2count[s2] = 0 <- submission2(s2), !childPass2countPartial(s2,_).
+// childPass2[s2] = value <- agg<<value=and(g)>> parent3(s3,s2), pass3[s3]=g. // Internal error: Not implemented: Aggregation function and.
+// lang:defaultValue[`childPass2] = true.
+childPass2true[s2] = value <- agg<<value=count()>> parent3(s3,s2), pass3[s3]=true.
+lang:defaultValue[`childPass2true] = 0.
+childPass2count[s2] = value <- agg<<value=count()>> parent3(s3,s2), pass3[s3]=_.
+lang:defaultValue[`childPass2count] = 0.
 childPass2[s2] = value <- childPass2true[s2]=t, childPass2count[s2]=c, int:eq_3[t, c]=value.
 
 grade2[s2] = value <- manualGrade2[s2]=value.
 grade2[s2] = value <- !manualGrade2(s2,_), childPass2[s2]=true, childGrade2[s2]=value.
 
 pass2[s2] = value <- grade2[s2]=g, float:ge_3[g, 5.5f]=gp, childPass2[s2]=cp, boolean:and[gp, cp]=value.
-pass2[s2] = false <- submission2(s2), !grade2(s2,_).
+lang:defaultValue[`pass2] = false.
 
 childGrade1total[s1] = value <- agg<<value=total(g)>> parent2(s2,s1), manualGrade2[s2]=g.
 childGrade1count[s1] = value <- agg<<value=count()>> parent2(s2,s1), manualGrade2[s2]=_.
 childGrade1[s1] = value <- childGrade1total(s1,t), childGrade1count(s1,c), cf=int:float:convert[c], value=float:divide[t, cf].
 
-childPass1truePartial[s1] = value <- agg<<value=count()>> parent2(s2,s1), pass2[s2]=true.
-childPass1true[s1] = value <- childPass1truePartial[s1]=value.
-childPass1true[s1] = 0 <- submission1(s1), !childPass1truePartial(s1,_).
-childPass1countPartial[s1] = value <- agg<<value=count()>> parent2(s2,s1), pass2[s2]=_.
-childPass1count[s1] = value <- childPass1countPartial[s1]=value.
-childPass1count[s1] = 0 <- submission1(s1), !childPass1countPartial(s1,_).
+childPass1true[s1] = value <- agg<<value=count()>> parent2(s2,s1), pass2[s2]=true.
+lang:defaultValue[`childPass1true] = 0.
+childPass1count[s1] = value <- agg<<value=count()>> parent2(s2,s1), pass2[s2]=_.
+lang:defaultValue[`childPass1count] = 0.
 childPass1[s1] = value <- childPass1true[s1]=t, childPass1count[s1]=c, int:eq_3[t, c]=value.
 
 grade1[s1] = value <- manualGrade1[s1]=value.
 grade1[s1] = value <- !manualGrade1(s1,_), childPass1[s1]=true, childGrade1[s1]=value.
 
 pass1[s1] = value <- grade1[s1]=g, float:ge_3[g, 5.5f]=gp, childPass1[s1]=cp, boolean:and[gp, cp]=value.
-pass1[s1] = false <- submission1(s1), !grade1(s1,_).
+lang:defaultValue[`pass1] = false.
+pass1includeDefault[s1] = value <- pass1[s1] = value.
 '
 
 exec '
-+submission1("mathAlice").
-+submission2("examAlice").
-+submission2("labAlice").
-+submission3("lab1Alice").
-+submission3("lab2Alice").
-+parent2("examAlice", "mathAlice").
-+parent2("labAlice", "mathAlice").
-+parent3("lab1Alice", "labAlice").
-+parent3("lab2Alice", "labAlice").
++submission1(mathAlice), +submission1id(mathAlice, "mathAlice"),
++submission2(examAlice), +submission2id(examAlice, "examAlice"), +parent2(examAlice, mathAlice), +manualGrade2[examAlice]=8.0f,
++submission2(labAlice),  +submission2id(labAlice,  "labAlice"),  +parent2(labAlice, mathAlice),
++submission3(lab1Alice), +submission3id(lab1Alice, "lab1Alice"), +parent3(lab1Alice, labAlice),  +manualGrade3[lab1Alice]=10.0f,
++submission3(lab2Alice), +submission3id(lab2Alice, "lab2Alice"), +parent3(lab2Alice, labAlice),  +manualGrade3[lab2Alice]=6.0f.
 
-+manualGrade2["examAlice"]=8.0f.
-+manualGrade3["lab1Alice"]=10.0f.
-+manualGrade3["lab2Alice"]=6.0f.
-
-+submission1("mathBob").
-+submission2("examBob").
-+submission2("labBob").
-+submission3("lab1Bob").
-+submission3("lab2Bob").
-+parent2("examBob", "mathBob").
-+parent2("labBob", "mathBob").
-+parent3("lab1Bob", "labBob").
-+parent3("lab2Bob", "labBob").
-
-+manualGrade2["examBob"]=9.0f.
-+manualGrade3["lab1Bob"]=3.0f.
-+manualGrade3["lab2Bob"]=10.0f.
++submission1(mathBob), +submission1id(mathBob, "mathBob"),
++submission2(examBob), +submission2id(examBob, "examBob"), +parent2(examBob, mathBob), +manualGrade2[examBob]=9.0f,
++submission2(labBob),  +submission2id(labBob,  "labBob"),  +parent2(labBob, mathBob),
++submission3(lab1Bob), +submission3id(lab1Bob, "lab1Bob"), +parent3(lab1Bob, labBob),  +manualGrade3[lab1Bob]=3.0f,
++submission3(lab2Bob), +submission3id(lab2Bob, "lab2Bob"), +parent3(lab2Bob, labBob),  +manualGrade3[lab2Bob]=10.0f.
 '
 
-print childGrade2
+print grade1
+
+print pass1includeDefault
