@@ -1,0 +1,38 @@
+addblock '
+assignment(a), assignment_id(a:id) -> string(id).
+submission(s), submission_id(s:id) -> string(id).
+student(st), student_id(st:id) -> string(id).
+assignmentParent(a2, a1) -> assignment(a2), assignment(a1).
+submissionAssignment(s, a) -> submission(s), assignment(a).
+submissionStudent(s, st) -> submission(s), student(st).
+submissionParent(s2, s1) -> submission(s2), submission(s1).
+
+submissionParent(s2, s1) <-
+  submissionStudent(s2, st),
+  submissionStudent(s1, st),
+  submissionAssignment(s2, a2),
+  submissionAssignment(s1, a1),
+  assignmentParent(a2, a1).
+'
+
+exec '
++student(alice), +student_id(alice, "alice"),
++student(bob),   +student_id(bob, "bob"),
++assignment(math), +assignment_id(math, "math"),
++assignment(exam), +assignment_id(exam, "exam"), +assignmentParent(exam, math),
++assignment(lab),  +assignment_id(lab, "lab"),   +assignmentParent(lab, math),
++assignment(lab1), +assignment_id(lab1, "lab1"), +assignmentParent(lab1, lab),
++assignment(lab2), +assignment_id(lab2, "lab2"), +assignmentParent(lab2, lab),
++submission(mathAlice), +submission_id(mathAlice, "mathAlice"), +submissionStudent(mathAlice, alice), +submissionAssignment(mathAlice, math),
++submission(examAlice), +submission_id(examAlice, "examAlice"), +submissionStudent(examAlice, alice), +submissionAssignment(examAlice, exam),
++submission(labAlice),  +submission_id(labAlice,  "labAlice"),  +submissionStudent(labAlice,  alice), +submissionAssignment(labAlice,  lab),
++submission(lab1Alice), +submission_id(lab1Alice, "lab1Alice"), +submissionStudent(lab1Alice, alice), +submissionAssignment(lab1Alice, lab1),
++submission(lab2Alice), +submission_id(lab2Alice, "lab2Alice"), +submissionStudent(lab2Alice, alice), +submissionAssignment(lab2Alice, lab2),
++submission(mathBob), +submission_id(mathBob, "mathBob"), +submissionStudent(mathBob, bob), +submissionAssignment(mathBob, math),
++submission(examBob), +submission_id(examBob, "examBob"), +submissionStudent(examBob, bob), +submissionAssignment(examBob, exam),
++submission(labBob),  +submission_id(labBob,  "labBob"),  +submissionStudent(labBob,  bob), +submissionAssignment(labBob,  lab),
++submission(lab1Bob), +submission_id(lab1Bob, "lab1Bob"), +submissionStudent(lab1Bob, bob), +submissionAssignment(lab1Bob, lab1),
++submission(lab2Bob), +submission_id(lab2Bob, "lab2Bob"), +submissionStudent(lab2Bob, bob), +submissionAssignment(lab2Bob, lab2).
+'
+
+print submissionParent
