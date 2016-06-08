@@ -143,10 +143,13 @@ namespace WeblabGrades
          *     a list with the latest source elements whenever any of the observable sequences
          *     produces an element.
          *     
-         * (Original implementation doesn't work with empty lists)
+         * (Original implementation blocks, what exactly happens here?)
          */
         public static IObservable<IEnumerable<T>> CombineLatestSafe<T>(this IEnumerable<IObservable<T>> elems)
         {
+            //return elems.CombineLatest();
+            //return new[] { Observable.Empty<T>() }.Concat(elems).CombineLatest();
+            //return Observable.Return(Enumerable.Empty<T>()).CombineLatest(elems.CombineLatest(), (a, b) => a.Concat(b));
             return elems.FoldL(
                 Observable.Return(Enumerable.Empty<T>()),
                 (acc, o) => acc.CombineLatest(o, (acc1, o1) => acc1.Append(o1)));
