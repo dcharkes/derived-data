@@ -16,52 +16,36 @@ namespace WeblabGrades
             var labAlice = new Submission();
             var lab1Alice = new Submission();
             var lab2Alice = new Submission();
-            mathAlice.children.Add(examAlice);
-            mathAlice.children.Add(labAlice);
-            labAlice.children.Add(lab1Alice);
-            labAlice.children.Add(lab2Alice);
-            examAlice.answer = "Good";
-            examAlice.manualGrade = 8.0f;
-            lab1Alice.answer = "Perfect";
-            lab1Alice.manualGrade = 10.0f;
-            lab2Alice.answer = "Sufficient";
-            lab2Alice.manualGrade = 6.0f;
+            mathAlice.children2.OnNext(new List<Submission> { examAlice, labAlice });
+            labAlice.children2.OnNext(new List<Submission> { lab1Alice, lab2Alice });
+            examAlice.answer2.OnNext("Good");
+            examAlice.manualGrade2.OnNext(8.0f);
+            examAlice.answer2.OnNext("Perfect");
+            lab1Alice.manualGrade2.OnNext(10.0f);
+            examAlice.answer2.OnNext("Sufficient");
+            lab2Alice.manualGrade2.OnNext(6.0f);
             var mathBob = new Submission();
             var examBob = new Submission();
             var labBob = new Submission();
             var lab1Bob = new Submission();
             var lab2Bob = new Submission();
-            mathBob.children.Add(examBob);
-            mathBob.children.Add(labBob);
-            labBob.children.Add(lab1Bob);
-            labBob.children.Add(lab2Bob);
-            examBob.answer = "Very Good";
-            examBob.manualGrade = 9.0f;
-            lab1Bob.answer = "Insufficient";
-            lab1Bob.manualGrade = 3.0f;
-            lab2Bob.answer = "Perfect";
-            lab2Bob.manualGrade = 10.0f;
+            mathBob.children2.OnNext(new List<Submission> { examBob, labBob });
+            labBob.children2.OnNext(new List<Submission> { lab1Bob, lab2Bob });
+            examBob.answer2.OnNext("Very Good");
+            examBob.manualGrade2.OnNext(9.0f);
+            examBob.answer2.OnNext("Insufficient");
+            lab1Bob.manualGrade2.OnNext(3.0f);
+            examBob.answer2.OnNext("Perfect");
+            lab2Bob.manualGrade2.OnNext(10.0f);
 
             Console.WriteLine("Alice");
-            Console.WriteLine(mathAlice.grade());
-            Console.WriteLine(mathAlice.pass());
+            Console.WriteLine(mathAlice.grade2.Latest().First());
+            Console.WriteLine(mathAlice.pass2.Latest().First());
             Console.WriteLine("Bob");
-            Console.WriteLine(mathBob.grade() + "Null");
-            Console.WriteLine(mathBob.pass());
+            Console.WriteLine(mathBob.grade2.Latest().First() + "Null");
+            Console.WriteLine(mathBob.pass2.Latest().First());
             Console.WriteLine("");
-            Console.WriteLine("Alice");
-            Console.WriteLine(mathAlice.manualGrade2.Value+" ");
-            Console.WriteLine(mathAlice.grade2.Latest().First()+" ");
-            Console.WriteLine(mathAlice.pass2.Latest().First()+ " ");
-            mathAlice.manualGrade2.OnNext(6.7f);
-            Console.WriteLine(mathAlice.manualGrade2.Value + " ");
-            Console.WriteLine(mathAlice.grade2.Latest().First() + " ");
-            Console.WriteLine(mathAlice.pass2.Latest().First() + " ");
-            mathAlice.manualGrade2.OnNext(8.9f);
-            Console.WriteLine(mathAlice.manualGrade2.Value + " ");
-            Console.WriteLine(mathAlice.grade2.Latest().First() + " ");
-            Console.WriteLine(mathAlice.pass2.Latest().First() + " ");
-            Console.WriteLine("");
+
             Console.WriteLine("Press any key to continue");
             Console.ReadKey();
         }
@@ -69,53 +53,16 @@ namespace WeblabGrades
 
     public class Submission
     {
-        public List<Submission> children = new List<Submission>();
 
-        public string answer = "";
+        public BehaviorSubject<List<Submission>> children2; //note List is mutable, should replace list, not mutate it
 
-        public float? manualGrade = null;
-
-        public float? childGrade()
-        {
-            var grades = children.Select(x => x.grade());
-            if (grades.Any())
-                return grades.Average();
-            else
-                return null;
-        }
-
-        public bool childPass()
-        {
-            var passes = children.Select(x => x.pass());
-            return passes.Aggregate(true, (acc, next) => acc && next);
-        }
-
-        public float? grade()
-        {
-            if (manualGrade.HasValue)
-                return manualGrade;
-            else
-            {
-                if (childPass())
-                    return childGrade();
-                else
-                    return null;
-            }
-        }
-
-        public bool pass()
-        {
-            var gradePass = grade().HasValue ? grade() >= 5.5f : false;
-            return gradePass && childPass();
-        }
-
-        public BehaviorSubject<List<Submission>> children2; //note List is mutable, but replace with new lists...
+        public BehaviorSubject<string> answer2;
 
         public BehaviorSubject<float?> manualGrade2;
 
         public IObservable<float?> childGrade2;
 
-        public BehaviorSubject<bool> childPass2;
+        public IObservable<bool> childPass2;
 
         public IObservable<float?> grade2;
 
@@ -125,14 +72,18 @@ namespace WeblabGrades
         {
             children2 = new BehaviorSubject<List<Submission>>(new List<Submission>());
 
-            manualGrade2 = new BehaviorSubject<float?>(null);
+            answer2 = new BehaviorSubject<string>("");
 
-            childPass2 = new BehaviorSubject<bool>(true); //default is no children
+            manualGrade2 = new BehaviorSubject<float?>(null);
 
             IObservable<List<IObservable<float?>>> childGrades1 = children2.Select(xs => xs.Select(x => x.grade2).ToList());
             IObservable<IObservable<List<float?>>> childGrades2 = childGrades1.Select(x => Sequence(x));
             IObservable<List<float?>> childGrades3 = childGrades2.Merge();
-            childGrade2 = new BehaviorSubject<float?>(null);
+            IObservable<List<float>> childGrades4 = childGrades3.Select(x => x.Where(y => y.HasValue).Select(y => y.Value).ToList());
+            childGrade2 = childGrades4.Select(x => x.Any() ? x.Average() : (float?)null);
+
+            IObservable<List<bool>> childPasses = children2.Select(xs => Sequence<bool>(xs.Select(x => x.pass2).ToList())).Merge();
+            childPass2 = childPasses.Select(x => FoldL((a, b) => a && b, true, x));
 
             grade2 = manualGrade2.CombineLatest(childGrade2, (mg2, cg2) => Tuple.Create(mg2, cg2)).CombineLatest(childPass2, (tuple, cp2) =>
              {
@@ -159,17 +110,47 @@ namespace WeblabGrades
 
         public static IObservable<List<T>> Sequence<T>(List<IObservable<T>> elems)
         {
-            List<IObservable<List<T>>> a = elems.Select(x => x.Select(y => new List<T> { y })).ToList();
-            IObservable<List<T>> b = a.Aggregate((x, y) => x.CombineLatest(y, (x1, y1) =>
+            return FoldL((acc, o) =>
             {
-                var z = new List<T>();
-                z.AddRange(x1);
-                z.AddRange(y1);
-                return z;
-            }));
-            return b;
+                return acc.CombineLatest(o, (acc1, o1) =>
+                {
+                    var z = new List<T>();
+                    z.AddRange(acc1);
+                    z.Add(o1);
+                    return z;
+                });
+            }, Observable.Return(new List<T>()), elems);
         }
 
+        public static A FoldL<A, B>(Func<A, B, A> f, A a, IEnumerable<B> b)
+        {
+            if (!b.Any())
+                return a;
+            else
+            {
+                var first = b.First();
+                var aprime = f(a, first);
+                var brest = b.Skip(1);
+                return FoldL(f, aprime, brest);
+            }
+        }
+
+        public static A FoldL2<A, B>(Func<A, B, A> f, A a, IEnumerable<B> b)
+        {
+            var acc = a;
+            var bs = b;
+            while (true)
+            {
+                if (!bs.Any())
+                    return acc;
+                else
+                {
+                    var first = bs.First();
+                    acc = f(acc, first);
+                    bs = bs.Skip(1);
+                }
+            }
+        }
     }
 
 }
