@@ -1,0 +1,47 @@
+addblock '
+lang:compiler:disableError:AGGREGATE_RECURSION[] = true.
+
+submission(s), submissionid(s:id) -> string(id).
+parent(s2, s) -> submission(s2), submission(s).
+manualGrade[s] = v -> submission(s), float(v).
+grade[s] = v -> submission(s), float(v).
+pass[s] = v -> submission(s), boolean(v).
+childgrade[s] = v -> submission(s), float(v).
+childpass[s] = v -> submission(s), boolean(v).
+
+grade[s2] = value <- manualGrade[s2]=value.
+grade[s2] = value <- !manualGrade(s2,_), childpass[s2]=true, childgrade[s2]=value.
+
+pass[s2] = value <- grade[s2]=g, float:ge_3[g, 5.5f]=gp, childpass[s2]=cp, boolean:and[gp, cp]=value.
+lang:defaultValue[`pass] = false.
+
+childgradetotal[s] = value <- agg<<value=total(g)>> parent(s2,s), manualGrade[s2]=g.
+childgradecount[s] = value <- agg<<value=count()>> parent(s2,s), manualGrade[s2]=_.
+childgrade[s] = value <- childgradetotal(s,t), childgradecount(s,c), cf=int:float:convert[c], value=float:divide[t, cf].
+
+childpasstrue[s] = value <- agg<<value=count()>> parent(s2,s), pass[s2]=true.
+lang:defaultValue[`childpasstrue] = 0.
+childpasscount[s] = value <- agg<<value=count()>> parent(s2,s), pass[s2]=_.
+lang:defaultValue[`childpasscount] = 0.
+childpass[s] = value <- childpasstrue[s]=t, childpasscount[s]=c, int:eq_3[t, c]=value.
+
+passIncludeDefault[s] = value <- pass[s] = value.
+'
+
+exec '
++submission(mathAlice), +submissionid(mathAlice, "mathAlice"),
++submission(examAlice), +submissionid(examAlice, "examAlice"), +parent(examAlice, mathAlice), +manualGrade[examAlice]=8.0f,
++submission(labAlice),  +submissionid(labAlice,  "labAlice"),  +parent(labAlice, mathAlice),
++submission(lab1Alice), +submissionid(lab1Alice, "lab1Alice"), +parent(lab1Alice, labAlice),  +manualGrade[lab1Alice]=10.0f,
++submission(lab2Alice), +submissionid(lab2Alice, "lab2Alice"), +parent(lab2Alice, labAlice),  +manualGrade[lab2Alice]=6.0f.
+
++submission(mathBob), +submissionid(mathBob, "mathBob"),
++submission(examBob), +submissionid(examBob, "examBob"), +parent(examBob, mathBob), +manualGrade[examBob]=9.0f,
++submission(labBob),  +submissionid(labBob,  "labBob"),  +parent(labBob, mathBob),
++submission(lab1Bob), +submissionid(lab1Bob, "lab1Bob"), +parent(lab1Bob, labBob),  +manualGrade[lab1Bob]=3.0f,
++submission(lab2Bob), +submissionid(lab2Bob, "lab2Bob"), +parent(lab2Bob, labBob),  +manualGrade[lab2Bob]=10.0f.
+'
+
+print grade
+
+print passIncludeDefault
