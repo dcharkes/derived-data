@@ -42,19 +42,25 @@ class submission =
   fun () ->
     let object_name = Name.gensym () in
     let field_name a = (Name.pair object_name (Name.of_string a)) in
+    (*let children = ASubmissionList.cell (field_name "children") [] in*)
     let manualGrade = AFloatOption.cell (field_name "manualGrade") None
     and childGrade = AFloatOption.cell (field_name "childGrade") None
-    and childPass = ABool.cell (field_name "childPass") true in
+    (*and childGrade = childGradeLambda (Name.of_string "childGrade") children*)
+    and childPass = ABool.cell (field_name "childPass") true 
+    (*and childPass = childPassLambda (Name.of_string "childPass") children*) in
     let grade = gradeLambda (field_name "grade") (manualGrade, childGrade, childPass) in
     let pass = passLambda (field_name "pass") (grade, childPass) in
       object
         val id = object_name
+        (*val children = children*)
         val childGrade = childGrade
         val childPass = childPass
         val manualGrade = manualGrade
         val grade = grade
         val pass = pass
         method id = id
+        (*method set_children a = ASubmissionList.set children a
+          method children = ASubmissionList.force children*)
         method set_manualGrade a = AFloatOption.set manualGrade a
         method manualGrade = AFloatOption.force manualGrade
         method set_childGrade a = AFloatOption.set childGrade a
