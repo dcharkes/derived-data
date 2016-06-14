@@ -5,68 +5,67 @@
 
 open Adapton;;
 
-module AInt = MakeArt.Of (Name) (Types.Int);;
+module ABool = MakeArt.Of (Name) (Types.Bool);;
 module AFloat = MakeArt.Of (Name) (Types.Float);;
 module AFloatOption = MakeArt.Of(Name)(Types.Option (Types.Float));;
 
+let gradeLambda = 
+  (AFloatOption.mk_mfn 
+     (Name.of_string "gradeLambda") 
+     (module Types.Tuple3 (AFloatOption) (AFloatOption) (ABool))
+     (fun memo -> function | (manualGrade, childGrade, childPass) ->
+      match AFloatOption.force manualGrade with
+          (Some g) -> (Some g)
+        | None -> if ABool.force childPass then AFloatOption.force childGrade else None)
+  ).AFloatOption.mfn_nart;;
+
+let passLambda =
+  (ABool.mk_mfn 
+     (Name.of_string "gradePass") 
+     (module Types.Tuple2 (AFloatOption)  (ABool))
+     (fun memo -> function | (grade, childPass) ->
+        let gradePass = match AFloatOption.force grade with
+            (Some g) -> g >= 5.5
+          | None    -> false
+        in
+          gradePass && ABool.force childPass)
+  ).ABool.mfn_nart;;
+
 class submission =
-  object (self)
-    val manualGrade = AFloatOption.cell (Name.of_string "manualGrade") None
-    method set_manualGrade a = AFloatOption.set manualGrade a
-    method manualGrade = AFloatOption.force manualGrade
-  end;;
+  fun () ->
+    let object_name = Name.gensym () in
+    let field_name a = (Name.pair object_name (Name.of_string a)) in
+    let manualGrade = AFloatOption.cell (field_name "manualGrade") None
+    and childGrade = AFloatOption.cell (field_name "childGrade") None
+    and childPass = ABool.cell (field_name "childPass") true in
+    let grade = gradeLambda (field_name "grade") (manualGrade, childGrade, childPass) in
+    let pass = passLambda (field_name "pass") (grade, childPass) in
+      object
+        val childGrade = childGrade
+        val childPass = childPass
+        val manualGrade = manualGrade
+        val grade = grade
+        val pass = pass
+        method set_manualGrade a = AFloatOption.set manualGrade a
+        method manualGrade = AFloatOption.force manualGrade
+        method set_childGrade a = AFloatOption.set childGrade a
+        method childGrade = AFloatOption.force childGrade
+        method set_childPass  a = ABool.set childPass a
+        method childPass = ABool.force childPass
+        method grade = AFloatOption.force grade
+        method pass = ABool.force pass
+      end;;
 
-let lab1Alice = new submission;;
-let lab2Alice = new submission;;
-lab1Alice#manualGrade;;
-lab2Alice#manualGrade;;
+let lab1Alice = new submission ();;
+let lab2Alice = new submission ();;
+lab1Alice#grade;;
+lab2Alice#grade;;
 lab1Alice#set_manualGrade (Some 10.0);;
-lab2Alice#set_manualGrade (Some 6.0);;
-lab1Alice#manualGrade;;
-lab2Alice#manualGrade;;
+lab2Alice#set_childGrade (Some 6.0);;
+lab1Alice#grade;;
+lab2Alice#grade;;
 lab2Alice#set_manualGrade (Some 7.0);;
-lab1Alice#manualGrade;;
-lab2Alice#manualGrade;;
-
-
-let x = AFloat.cell (Name.of_string "x") 10.0;;
-let y = AFloat.cell (Name.of_string "y") 20.0;;
-AFloat.force x;;
-AFloat.force y;;
-
-let plus_five = (AFloat.mk_mfn (Name.of_string "plus_five") (module AFloat)
-                   (fun memo -> fun x -> AFloat.force x +. 5.0)).AFloat.mfn_nart;;
-
-let z = plus_five (Name.of_string "z") x;;
-AFloat.force z;;
-let a = plus_five (Name.of_string "a") z;;
-AFloat.force a;;
-AFloat.set x 3.0;;
-AFloat.force a;;
-
-
-module AFloatPlus =
-struct
-  type t = AFloat.t * AFloat.t
-      [@@deriving eq, ord, show]
-  let hash seed = function
-    | (t, t') -> AFloat.hash (AFloat.hash seed t) t'
-  let sanitize = function
-    | (t, t') ->  (AFloat.sanitize t, AFloat.sanitize t')
-
-end;;
-
-let plus_float = (AFloat.mk_mfn (Name.of_string "plus_five") (module AFloatPlus)
-                    (fun memo -> function | (x, y) -> AFloat.force x +. AFloat.force y)).AFloat.mfn_nart;;
-
-let b = plus_float (Name.of_string "b") (x, y);;
-AFloat.force b;;
-AFloat.set y 4.0;;
-AFloat.force b;;
-let c = plus_five (Name.of_string "c") b;;
-AFloat.force c;;
-let d = plus_float (Name.of_string "d") (c, y);;
-AFloat.force d;;
-
+lab1Alice#grade;;
+lab2Alice#grade;;
 
 
