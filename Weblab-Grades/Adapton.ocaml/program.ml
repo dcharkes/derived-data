@@ -5,6 +5,13 @@
 
 open Adapton;;
 
+let conjunction = List.fold_left ( && ) true;;
+let sum = List.fold_left ( +. ) 0.0;;
+let avg a = match a with
+    [] -> None
+  | _  -> Some (sum a /. float_of_int (List.length a));;
+let flatten a = List.flatten (List.map (fun x->match x with Some(y) -> [y] | None -> []) a);;
+
 module ABool = MakeArt.Of (Name) (Types.Bool);;
 module AFloat = MakeArt.Of (Name) (Types.Float);;
 module AFloatOption = MakeArt.Of(Name)(Types.Option (Types.Float));;
@@ -41,11 +48,13 @@ class submission =
     let grade = gradeLambda (field_name "grade") (manualGrade, childGrade, childPass) in
     let pass = passLambda (field_name "pass") (grade, childPass) in
       object
+        val id = object_name
         val childGrade = childGrade
         val childPass = childPass
         val manualGrade = manualGrade
         val grade = grade
         val pass = pass
+        method id = id
         method set_manualGrade a = AFloatOption.set manualGrade a
         method manualGrade = AFloatOption.force manualGrade
         method set_childGrade a = AFloatOption.set childGrade a
@@ -68,4 +77,46 @@ lab2Alice#set_manualGrade (Some 7.0);;
 lab1Alice#grade;;
 lab2Alice#grade;;
 
+module Submission =
+struct
+  type t = submission
+  let hash = Hashtbl.seeded_hash
+  let sanitize x = x
+  let compare a b = (compare a#id b#id)
+  let show a = "<submission>"
+  let pp fmt s = Format.fprintf fmt "%s" (show s)
+  let equal a b = (a#id = b#id)
+end;;
+
+module ASubmissionList = MakeArt.Of(Name)(Types.List (Submission));;
+
+let childGradeLambda =
+  (AFloatOption.mk_mfn 
+     (Name.of_string "gradePass") 
+     (module ASubmissionList)
+     (fun memo -> fun children ->
+        let grades = flatten (List.map (fun x->x#grade) (ASubmissionList.force children)) 
+        in
+          avg grades
+     )
+  ).AFloatOption.mfn_nart;;
+
+let childPassLambda =
+  (ABool.mk_mfn 
+     (Name.of_string "gradePass") 
+     (module ASubmissionList)
+     (fun memo -> fun children ->
+        conjunction (List.map (fun x->x#pass) (ASubmissionList.force children)) 
+     )
+  ).ABool.mfn_nart;;
+
+let someSubmissionList = ASubmissionList.cell (Name.of_string "someSubmissionList") [];;
+let someChildGrade = childGradeLambda (Name.of_string "someChildGrade") someSubmissionList;;
+AFloatOption.force someChildGrade;;
+ASubmissionList.set someSubmissionList [lab1Alice];;
+AFloatOption.force someChildGrade;;
+ASubmissionList.set someSubmissionList [lab2Alice];;
+AFloatOption.force someChildGrade;;
+ASubmissionList.set someSubmissionList [lab1Alice; lab2Alice];;
+AFloatOption.force someChildGrade;;
 
