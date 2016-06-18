@@ -1,5 +1,6 @@
 import rescala._
 import makro.SignalMacro.{SignalM => Signal}
+import Functions._
 
 object WeblabGradesREScala extends App {
 
@@ -56,10 +57,7 @@ class Submission {
   }
 
   val childPass: DependentSignal[Boolean] = Signal {
-    val passes = children().map {
-      _.pass()
-    }
-    Functions.conjunction(passes)
+    children().map(_.pass()).conjunction
   }
 
   val grade: DependentSignal[Option[Double]] = Signal {
@@ -83,8 +81,8 @@ class Submission {
 }
 
 object Functions {
-  def conjunction(input: List[Boolean]): Boolean = {
-    input.forall(b => b)
+  implicit class BoolListImprovements(input: List[Boolean]) {
+    def conjunction = input.forall(b => b)
   }
 }
 
