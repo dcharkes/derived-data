@@ -72,11 +72,12 @@ class Submission {
   }
 
   val pass: DependentSignal[Boolean] = Signal {
-    val gradePass = grade() match {
-      case None => false
-      case Some(g) => g >= 5.5
-    }
-    gradePass && childPass()
+    grade().exists( _ >= 5.5 )
+//    grade().map( _ >= 5.5 ).getOrElse(false)
+//    grade() match {
+//      case None => false
+//      case Some(g) => g >= 5.5
+//    }
   }
 }
 
