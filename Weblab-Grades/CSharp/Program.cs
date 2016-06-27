@@ -58,17 +58,12 @@ namespace ConsoleApplication
 
         public float? childGrade()
         {
-            var grades = children.Select(x => x.grade());
-            if (grades.Any())
-                return grades.Average();
-            else
-                return null;
+            return children.Select(x => x.grade()).Flatten().AverageSafe();
         }
 
         public bool childPass()
         {
-            var passes = children.Select(x => x.pass());
-            return passes.Aggregate(true, (acc, next) => acc && next);
+            return children.Select(x => x.pass()).Conjunction();
         }
 
         public float? grade()
@@ -84,9 +79,63 @@ namespace ConsoleApplication
 
         public bool pass()
         {
-            var gradePass = grade().HasValue ? grade() >= 5.5f : false;
-            return gradePass && childPass();
+            return grade().HasValue ? grade() >= 5.5f : false;
         }
 
+    }
+
+    public static class MyExtensions
+    {
+        /**
+         * Conjunction of a list of bools
+         */
+        public static bool Conjunction(this IEnumerable<bool> elems)
+        {
+            return elems.FoldL(true, (a, b) => a && b);
+        }
+
+        /**
+         * Average of floats returing an optional float (null if imput list is empty)
+         */
+        public static float? AverageSafe(this IEnumerable<float> elems)
+        {
+            return elems.Any() ? elems.Average() : (float?)null;
+        }
+
+        /**
+         * Flatten for list of optional floats
+         */
+        public static IEnumerable<float> Flatten(this IEnumerable<float?> elems)
+        {
+            return elems.Where(x => x.HasValue).Select(x => x.Value);
+        }
+
+        /**
+         * FoldL extension method
+         */
+        public static A FoldL<A, B>(this IEnumerable<B> b, A a, Func<A, B, A> f)
+        {
+            return FoldL(f, a, b);
+        }
+
+        /**
+         * Tail recursive FoldL (haskell style parameters)
+         */
+        public static A FoldL<A, B>(Func<A, B, A> f, A a, IEnumerable<B> b)
+        {
+            var acc = a;
+            var bs = b;
+            while (true)
+            {
+                if (!bs.Any())
+                    return acc;
+                else
+                {
+                    var first = bs.First();
+                    acc = f(acc, first);
+                    bs = bs.Skip(1);
+                }
+            }
+        }
     }
 }
