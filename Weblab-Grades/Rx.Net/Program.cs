@@ -83,11 +83,9 @@ namespace WeblabGrades
 
             manualGrade = new BehaviorSubject<float?>(null);
 
-            IObservable<IEnumerable<float>> grades = children.Select(xs => xs.Select(x => x.grade).CombineLatestSafe()).Merge().Select(x => x.Flatten());
-            childGrade = grades.Select(x => x.AverageSafe());
+            childGrade = children.Select(xs => xs.Select(x => x.grade).CombineLatestSafe()).Merge().Select(x => x.Flatten().AverageSafe());
 
-            IObservable<IEnumerable<bool>> passes = children.Select(xs => xs.Select(x => x.pass).CombineLatestSafe()).Merge();
-            childPass = passes.Select(xs => xs.Conjunction());
+            childPass = children.Select(xs => xs.Select(x => x.pass).CombineLatestSafe()).Merge().Select(xs => xs.Conjunction());
 
             grade = manualGrade.CombineLatest(childGrade, childPass, (manualGrade1, childGrade1, childPass1) =>
             {
@@ -102,12 +100,7 @@ namespace WeblabGrades
                 }
             });
 
-            pass = grade.CombineLatest(childPass, (grade1, childPass1) =>
-            {
-                var gradePass = grade1.HasValue ? grade1 >= 5.5f : false;
-                return gradePass && childPass1;
-            });
-
+            pass = grade.Select(g => g.HasValue ? g >= 5.5f : false);
         }
 
     }
