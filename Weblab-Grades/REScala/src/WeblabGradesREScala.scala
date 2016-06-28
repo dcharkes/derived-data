@@ -49,11 +49,7 @@ class Submission {
   val manualGrade: VarSynt[Option[Double]] = Var(None)
 
   val childGrade: DependentSignal[Option[Double]] = Signal {
-    val grades = children().flatMap(_.grade())
-    if (grades.nonEmpty)
-      Some(grades.sum / grades.length)
-    else
-      None
+    children().flatMap(_.grade()).average
   }
 
   val childPass: DependentSignal[Boolean] = Signal {
@@ -84,6 +80,9 @@ class Submission {
 object Functions {
   implicit class BoolListImprovements(input: List[Boolean]) {
     def conjunction = input.forall(b => b)
+  }
+  implicit class DoubleListImprovements(input: List[Double]){
+    def average = if(input.nonEmpty) Some(input.sum / input.length) else None
   }
 }
 
