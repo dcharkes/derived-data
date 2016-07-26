@@ -75,11 +75,7 @@ class Submission {
 
 
   def pass(): Boolean = {
-    val gradePass = grade() match {
-      case None => false
-      case Some(g) => g >= 5.5
-    }
-    gradePass && childPass()
+    grade().exists(_ >= 5.5)
   }
 }
 
