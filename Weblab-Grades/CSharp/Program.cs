@@ -79,7 +79,7 @@ namespace ConsoleApplication
 
         public bool pass()
         {
-            return grade().HasValue ? grade() >= 5.5f : false;
+            return grade().HasValue && grade() >= 5.5f;
         }
 
     }
