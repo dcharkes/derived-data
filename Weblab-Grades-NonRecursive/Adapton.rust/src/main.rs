@@ -26,18 +26,16 @@ fn mycell<X:Debug+Hash+Eq+PartialEq+Clone>(item : X) -> Art<X> {
 }
 
 fn main() {
+    init_dcg();
+
     let math_alice = Submission1::new(None, None);
     let exam_alice = Submission2::new(Some("Good".to_string()), Some(8));
     let lab_alice = Submission2::new(None, None);
     let lab1_alice = Submission3::new(Some("Perfect".to_string()), Some(10));
     let lab2_alice = Submission3::new(Some("Sufficient".to_string()), Some(6));
     {
-        let mut mut_math_alice = force(&math_alice);
-        mut_math_alice.children.push(exam_alice.clone());
-        mut_math_alice.children.push(lab_alice.clone());
-        let mut mut_lab_alice = force(&lab_alice);
-        mut_lab_alice.children.push(lab1_alice.clone());
-        mut_lab_alice.children.push(lab2_alice.clone());
+        set(math_alice.children.clone(), vec!(exam_alice.clone(),lab_alice.clone()));
+        set(lab_alice.children.clone(), vec!(lab1_alice.clone(),lab2_alice.clone()));
     }
     let math_bob = Submission1::new(None, None);
     let exam_bob = Submission2::new(Some("Very Good".to_string()), Some(9));
@@ -45,20 +43,17 @@ fn main() {
     let lab1_bob = Submission3::new(Some("Insufficient".to_string()), Some(3));
     let lab2_bob = Submission3::new(Some("Perfect".to_string()), Some(10));
     {
-        let mut mut_math_bob = force(&math_bob);
-        mut_math_bob.children.push(exam_bob.clone());
-        mut_math_bob.children.push(lab_bob.clone());
-        let mut mut_lab_bob = force(&lab_bob);
-        mut_lab_bob.children.push(lab1_bob.clone());
-        mut_lab_bob.children.push(lab2_bob.clone());
+
+        set(math_bob.children.clone(), vec!(exam_bob.clone(),lab_bob.clone()));
+        set(lab_bob.children.clone(), vec!(lab1_bob.clone(),lab2_bob.clone()));
     }
     println!("Alice");
-    let math_alice = force(&math_alice);
+
     println!("{:?}", math_alice.grade());
     println!("{:?}", math_alice.pass());
     println!("");
     println!("Bob");
-    let math_bob = force(&math_bob);
+
     println!("{:?}", math_bob.grade());
     println!("{:?}", math_bob.pass());
 }
@@ -66,29 +61,29 @@ fn main() {
 #[allow(dead_code)]
 #[derive(Debug,Hash,Eq,PartialEq,Clone)]
 struct Submission1 {
-    children: Vec<Art<Submission2>>,
+    children: Art<Vec<Submission2>>,
     answer: Option<String>,
     manual_grade: Option<i32>
 }
 impl Submission1 {
-    fn new(answer: Option<String>, manual_grade: Option<i32>) -> Art<Submission1> {
-        mycell(Submission1 {
-            children: Vec::new(),
+    fn new(answer: Option<String>, manual_grade: Option<i32>) -> Submission1 {
+        Submission1 {
+            children: mycell(Vec::new()),
             answer: answer,
             manual_grade: manual_grade,
-        })
+        }
     }
 
     fn child_grade(&self) -> Option<i32> {
-        let grades: Vec<i32> = self.children.iter().flat_map(|x| -> Option<i32>{
-            force(x).grade()
+        let grades: Vec<i32> = force(&self.children).iter().flat_map(|x| -> Option<i32>{
+            x.grade()
         }).collect();
         avg(&grades)
     }
 
     fn child_pass(&self) -> bool {
-        let passes: Vec<bool> = self.children.iter().map(|x| -> bool{
-            force(x).pass()
+        let passes: Vec<bool> = force(&self.children).iter().map(|x| -> bool{
+            x.pass()
         }).collect();
         conj(&passes)
     }
@@ -118,29 +113,29 @@ impl Submission1 {
 #[allow(dead_code)]
 #[derive(Debug,Hash,Eq,PartialEq,Clone)]
 struct Submission2 {
-    children: Vec<Art<Submission3>>,
+    children: Art<Vec<Submission3>>,
     answer: Option<String>,
     manual_grade: Option<i32>
 }
 impl Submission2 {
-    fn new(answer: Option<String>, manual_grade: Option<i32>) -> Art<Submission2> {
-        mycell(Submission2 {
-            children: Vec::new(),
+    fn new(answer: Option<String>, manual_grade: Option<i32>) -> Submission2 {
+        Submission2 {
+            children: mycell(Vec::new()),
             answer: answer,
             manual_grade: manual_grade,
-        })
+        }
     }
 
     fn child_grade(&self) -> Option<i32> {
-        let grades: Vec<i32> = self.children.iter().flat_map(|x| -> Option<i32>{
-            force(x).grade()
+        let grades: Vec<i32> = force(&self.children).iter().flat_map(|x| -> Option<i32>{
+            x.grade()
         }).collect();
         avg(&grades)
     }
 
     fn child_pass(&self) -> bool {
-        let passes: Vec<bool> = self.children.iter().map(|x| -> bool{
-            force(x).pass()
+        let passes: Vec<bool> = force(&self.children).iter().map(|x| -> bool{
+            x.pass()
         }).collect();
         conj(&passes)
     }
@@ -174,11 +169,11 @@ struct Submission3 {
     manual_grade: Option<i32>
 }
 impl Submission3 {
-    fn new(answer: Option<String>, manual_grade: Option<i32>) -> Art<Submission3> {
-        mycell(Submission3 {
+    fn new(answer: Option<String>, manual_grade: Option<i32>) -> Submission3 {
+        Submission3 {
             answer: answer,
             manual_grade: manual_grade,
-        })
+        }
     }
 
     fn grade(&self) -> Option<i32> {
