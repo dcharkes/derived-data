@@ -17,7 +17,10 @@
 use std::fmt::Debug;
 use std::hash::Hash;
 
+use std::rc::Rc;
+
 use adapton::engine::* ;
+use adapton::macros::* ;
 
 static mut counter : usize = 0;
 
@@ -48,12 +51,18 @@ fn main() {
         set(lab_bob.children.clone(), vec!(lab1_bob.clone(),lab2_bob.clone()));
     }
     println!("Alice");
-
     println!("{:?}", math_alice.grade());
     println!("{:?}", math_alice.pass());
+
     println!("");
     println!("Bob");
+    println!("{:?}", math_bob.grade());
+    println!("{:?}", math_bob.pass());
 
+    set(lab1_bob.manual_grade, Some(8));
+
+    println!("");
+    println!("Bob2");
     println!("{:?}", math_bob.grade());
     println!("{:?}", math_bob.pass());
 }
@@ -63,14 +72,14 @@ fn main() {
 struct Submission1 {
     children: Art<Vec<Submission2>>,
     answer: Option<String>,
-    manual_grade: Option<i32>
+    manual_grade: Art<Option<i32>>
 }
 impl Submission1 {
     fn new(answer: Option<String>, manual_grade: Option<i32>) -> Submission1 {
         Submission1 {
             children: mycell(Vec::new()),
             answer: answer,
-            manual_grade: manual_grade,
+            manual_grade: mycell(manual_grade),
         }
     }
 
@@ -89,7 +98,7 @@ impl Submission1 {
     }
 
     fn grade(&self) -> Option<i32> {
-        match self.manual_grade {
+        match force(&self.manual_grade) {
             Some(x) => Some(x),
             None => {
                 if self.child_pass() {
@@ -102,7 +111,8 @@ impl Submission1 {
     }
 
     fn pass(&self) -> bool {
-        let g = self.grade();
+        println!("{:?}", self);
+        let g = memo!(grade, s:self.clone());
         match g {
             Option::None => false,
             Some(v) => v >= 5
@@ -110,19 +120,23 @@ impl Submission1 {
     }
 }
 
+fn grade(me:Submission1) -> Option<i32> {
+    me.grade()
+}
+
 #[allow(dead_code)]
 #[derive(Debug,Hash,Eq,PartialEq,Clone)]
 struct Submission2 {
     children: Art<Vec<Submission3>>,
     answer: Option<String>,
-    manual_grade: Option<i32>
+    manual_grade: Art<Option<i32>>
 }
 impl Submission2 {
     fn new(answer: Option<String>, manual_grade: Option<i32>) -> Submission2 {
         Submission2 {
             children: mycell(Vec::new()),
             answer: answer,
-            manual_grade: manual_grade,
+            manual_grade: mycell(manual_grade),
         }
     }
 
@@ -141,7 +155,7 @@ impl Submission2 {
     }
 
     fn grade(&self) -> Option<i32> {
-        match self.manual_grade {
+        match force(&self.manual_grade) {
             Some(x) => Some(x),
             None => {
                 if self.child_pass() {
@@ -166,18 +180,18 @@ impl Submission2 {
 #[derive(Debug,Hash,Eq,PartialEq,Clone)]
 struct Submission3 {
     answer: Option<String>,
-    manual_grade: Option<i32>
+    manual_grade: Art<Option<i32>>
 }
 impl Submission3 {
     fn new(answer: Option<String>, manual_grade: Option<i32>) -> Submission3 {
         Submission3 {
             answer: answer,
-            manual_grade: manual_grade,
+            manual_grade: mycell(manual_grade),
         }
     }
 
     fn grade(&self) -> Option<i32> {
-        self.manual_grade
+        force(&self.manual_grade)
     }
 
     fn pass(&self) -> bool {
