@@ -1,0 +1,7 @@
+[package]
+name = "weblab_grades_nonrecursive"
+version = "0.1.0"
+authors = ["Daco Harkes <dc.harkes@gmail.com>"]
+
+[dependencies]
+adapton = {  git = "https://github.com/cuplv/adapton.rust.git",  branch = "dev"}
