@@ -4,4 +4,4 @@ version = "0.1.0"
 authors = ["Daco Harkes <dc.harkes@gmail.com>"]
 
 [dependencies]
-adapton = "0.2.4"
+adapton = {  git = "https://github.com/cuplv/adapton.rust.git",  branch = "dev"}
