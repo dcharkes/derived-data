@@ -14,81 +14,91 @@
 // not using Adapton yet
 #[macro_use] extern crate adapton ;
 
+use std::fmt::Debug;
+use std::hash::Hash;
+
 use std::rc::Rc;
-use std::cell::RefCell;
 
 use adapton::engine::* ;
 use adapton::macros::* ;
 
+static mut counter : usize = 0;
+
+fn mycell<X:Debug+Hash+Eq+PartialEq+Clone>(item : X) -> Art<X> {
+    return cell(name_of_usize(unsafe{counter+=1;counter}), item);
+}
+
 fn main() {
+    init_dcg();
+
     let math_alice = Submission1::new(None, None);
-    let exam_alice = Submission2::new(Some("Good".to_string()), Some(8.0));
+    let exam_alice = Submission2::new(Some("Good".to_string()), Some(8));
     let lab_alice = Submission2::new(None, None);
-    let lab1_alice = Submission3::new(Some("Perfect".to_string()), Some(10.0));
-    let lab2_alice = Submission3::new(Some("Sufficient".to_string()), Some(6.0));
+    let lab1_alice = Submission3::new(Some("Perfect".to_string()), Some(10));
+    let lab2_alice = Submission3::new(Some("Sufficient".to_string()), Some(6));
     {
-        let mut mut_math_alice = math_alice.borrow_mut();
-        mut_math_alice.children.push(exam_alice.clone());
-        mut_math_alice.children.push(lab_alice.clone());
-        let mut mut_lab_alice = lab_alice.borrow_mut();
-        mut_lab_alice.children.push(lab1_alice.clone());
-        mut_lab_alice.children.push(lab2_alice.clone());
+        set(math_alice.children.clone(), vec!(exam_alice.clone(),lab_alice.clone()));
+        set(lab_alice.children.clone(), vec!(lab1_alice.clone(),lab2_alice.clone()));
     }
     let math_bob = Submission1::new(None, None);
-    let exam_bob = Submission2::new(Some("Very Good".to_string()), Some(9.0));
+    let exam_bob = Submission2::new(Some("Very Good".to_string()), Some(9));
     let lab_bob = Submission2::new(None, None);
-    let lab1_bob = Submission3::new(Some("Insufficient".to_string()), Some(3.0));
-    let lab2_bob = Submission3::new(Some("Perfect".to_string()), Some(10.0));
+    let lab1_bob = Submission3::new(Some("Insufficient".to_string()), Some(3));
+    let lab2_bob = Submission3::new(Some("Perfect".to_string()), Some(10));
     {
-        let mut mut_math_bob = math_bob.borrow_mut();
-        mut_math_bob.children.push(exam_bob.clone());
-        mut_math_bob.children.push(lab_bob.clone());
-        let mut mut_lab_bob = lab_bob.borrow_mut();
-        mut_lab_bob.children.push(lab1_bob.clone());
-        mut_lab_bob.children.push(lab2_bob.clone());
+
+        set(math_bob.children.clone(), vec!(exam_bob.clone(),lab_bob.clone()));
+        set(lab_bob.children.clone(), vec!(lab1_bob.clone(),lab2_bob.clone()));
     }
     println!("Alice");
-    let math_alice = math_alice.borrow();
     println!("{:?}", math_alice.grade());
     println!("{:?}", math_alice.pass());
+
     println!("");
     println!("Bob");
-    let math_bob = math_bob.borrow();
+    println!("{:?}", math_bob.grade());
+    println!("{:?}", math_bob.pass());
+
+    set(lab1_bob.manual_grade, Some(8));
+
+    println!("");
+    println!("Bob2");
     println!("{:?}", math_bob.grade());
     println!("{:?}", math_bob.pass());
 }
 
 #[allow(dead_code)]
+#[derive(Debug,Hash,Eq,PartialEq,Clone)]
 struct Submission1 {
-    children: Vec<Rc<RefCell<Submission2>>>,
+    children: Art<Vec<Submission2>>,
     answer: Option<String>,
-    manual_grade: Option<f32>
+    manual_grade: Art<Option<i32>>
 }
 impl Submission1 {
-    fn new(answer: Option<String>, manual_grade: Option<f32>) -> Rc<RefCell<Submission1>> {
-        Rc::new(RefCell::new(Submission1 {
-            children: Vec::new(),
+    fn new(answer: Option<String>, manual_grade: Option<i32>) -> Submission1 {
+        Submission1 {
+            children: mycell(Vec::new()),
             answer: answer,
-            manual_grade: manual_grade,
-        }))
+            manual_grade: mycell(manual_grade),
+        }
     }
 
-    fn child_grade(&self) -> Option<f32> {
-        let grades: Vec<f32> = self.children.iter().flat_map(|x| -> Option<f32>{
-            x.borrow().grade()
+    fn child_grade(&self) -> Option<i32> {
+        let grades: Vec<i32> = force(&self.children).iter().flat_map(|x| -> Option<i32>{
+            x.grade()
         }).collect();
         avg(&grades)
     }
 
     fn child_pass(&self) -> bool {
-        let passes: Vec<bool> = self.children.iter().map(|x| -> bool{
-            x.borrow().pass()
+        let passes: Vec<bool> = force(&self.children).iter().map(|x| -> bool{
+            x.pass()
         }).collect();
         conj(&passes)
     }
 
-    fn grade(&self) -> Option<f32> {
-        match self.manual_grade {
+    fn grade(&self) -> Option<i32> {
+        match force(&self.manual_grade) {
             Some(x) => Some(x),
             None => {
                 if self.child_pass() {
@@ -101,45 +111,51 @@ impl Submission1 {
     }
 
     fn pass(&self) -> bool {
-        let g = self.grade();
+        println!("{:?}", self);
+        let g = memo!(grade, s:self.clone());
         match g {
             Option::None => false,
-            Some(v) => v >= 5.5
+            Some(v) => v >= 5
         }
     }
 }
 
+fn grade(me:Submission1) -> Option<i32> {
+    me.grade()
+}
+
 #[allow(dead_code)]
+#[derive(Debug,Hash,Eq,PartialEq,Clone)]
 struct Submission2 {
-    children: Vec<Rc<RefCell<Submission3>>>,
+    children: Art<Vec<Submission3>>,
     answer: Option<String>,
-    manual_grade: Option<f32>
+    manual_grade: Art<Option<i32>>
 }
 impl Submission2 {
-    fn new(answer: Option<String>, manual_grade: Option<f32>) -> Rc<RefCell<Submission2>> {
-        Rc::new(RefCell::new(Submission2 {
-            children: Vec::new(),
+    fn new(answer: Option<String>, manual_grade: Option<i32>) -> Submission2 {
+        Submission2 {
+            children: mycell(Vec::new()),
             answer: answer,
-            manual_grade: manual_grade,
-        }))
+            manual_grade: mycell(manual_grade),
+        }
     }
 
-    fn child_grade(&self) -> Option<f32> {
-        let grades: Vec<f32> = self.children.iter().flat_map(|x| -> Option<f32>{
-            x.borrow().grade()
+    fn child_grade(&self) -> Option<i32> {
+        let grades: Vec<i32> = force(&self.children).iter().flat_map(|x| -> Option<i32>{
+            x.grade()
         }).collect();
         avg(&grades)
     }
 
     fn child_pass(&self) -> bool {
-        let passes: Vec<bool> = self.children.iter().map(|x| -> bool{
-            x.borrow().pass()
+        let passes: Vec<bool> = force(&self.children).iter().map(|x| -> bool{
+            x.pass()
         }).collect();
         conj(&passes)
     }
 
-    fn grade(&self) -> Option<f32> {
-        match self.manual_grade {
+    fn grade(&self) -> Option<i32> {
+        match force(&self.manual_grade) {
             Some(x) => Some(x),
             None => {
                 if self.child_pass() {
@@ -155,45 +171,46 @@ impl Submission2 {
         let g = self.grade();
         match g {
             Option::None => false,
-            Some(v) => v >= 5.5
+            Some(v) => v >= 5
         }
     }
 }
 
 #[allow(dead_code)]
+#[derive(Debug,Hash,Eq,PartialEq,Clone)]
 struct Submission3 {
     answer: Option<String>,
-    manual_grade: Option<f32>
+    manual_grade: Art<Option<i32>>
 }
 impl Submission3 {
-    fn new(answer: Option<String>, manual_grade: Option<f32>) -> Rc<RefCell<Submission3>> {
-        Rc::new(RefCell::new(Submission3 {
+    fn new(answer: Option<String>, manual_grade: Option<i32>) -> Submission3 {
+        Submission3 {
             answer: answer,
-            manual_grade: manual_grade,
-        }))
+            manual_grade: mycell(manual_grade),
+        }
     }
 
-    fn grade(&self) -> Option<f32> {
-        self.manual_grade
+    fn grade(&self) -> Option<i32> {
+        force(&self.manual_grade)
     }
 
     fn pass(&self) -> bool {
         let g = self.grade();
         match g {
             Option::None => false,
-            Some(v) => v >= 5.5
+            Some(v) => v >= 5
         }
     }
 }
 
-fn sum(numbers: &Vec<f32>) -> f32 {
-    numbers.iter().fold(0.0, |p, &q| p + q)
+fn sum(numbers: &Vec<i32>) -> i32 {
+    numbers.iter().fold(0, |p, &q| p + q)
 }
-fn avg(numbers: &Vec<f32>) -> Option<f32> {
+fn avg(numbers: &Vec<i32>) -> Option<i32> {
     if numbers.is_empty() {
         None
     } else {
-        Some(sum(numbers) / numbers.len() as f32)
+        Some(sum(numbers) / numbers.len() as i32)
     }
 }
 fn conj(bools: &Vec<bool>) -> bool {
