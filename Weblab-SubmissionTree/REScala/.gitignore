@@ -1,0 +1,5 @@
+/bin/
+.cache-main
+.idea/workspace.xml
+.idea/tasks.xml
+out
