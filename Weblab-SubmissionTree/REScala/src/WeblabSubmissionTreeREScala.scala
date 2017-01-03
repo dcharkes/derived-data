@@ -45,9 +45,9 @@ object WeblabSubmissionTreeREScala extends App {
   println("ExamAlice parent submission: " + examAlice.parent.get)
   println("LabAlice parent submission:  " + labAlice.parent.get)
 
-  println("Alice fullname:  " + alice.fullName.get)
-  alice.surName = "Bobson"
-  println("Alice fullname:  " + alice.fullName.get)
+  println("Alice fullname:  " + alice.summary.get)
+  alice.street() = "First Street"
+  println("Alice fullname:  " + alice.summary.get)
 
 }
 
@@ -125,9 +125,12 @@ class Student {
   val name: VarSynt[String] = Var("")
   val submissions: VarSynt[List[Submission]] = Var(Nil)
 
-  var surName: String = ""
-  val fullName: DependentSignal[String] = Signal {
-    name() +  " " + surName
+  val city: VarSynt[String] = Var("")
+  val street: VarSynt[String] = Var("")
+  def address: String = street.get + " " + city.get
+
+  val summary: DependentSignal[String] = Signal {
+    name() +  " " + address
   }
 
   override def toString: String = name.get
