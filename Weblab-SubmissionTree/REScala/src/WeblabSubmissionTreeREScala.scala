@@ -91,6 +91,10 @@ class Submission {
     assignment().map(_.children()).getOrElse(Nil).flatMap(_.submissions()).filter(_.student() == student())
   }
 
+//  val parentManual: DependentSignal[Option[Submission]] = Signal {
+//    assignment().flatMap(_.parent()).map(_.submissions()).getOrElse(Nil).find(_.student() == student())
+//  }
+
   val parent: VarSynt[Option[Submission]] = Var(None)
 
   var oldChildren: List[Submission] = Nil
