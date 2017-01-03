@@ -45,6 +45,10 @@ object WeblabSubmissionTreeREScala extends App {
   println("ExamAlice parent submission: " + examAlice.parent.get)
   println("LabAlice parent submission:  " + labAlice.parent.get)
 
+  println("Alice fullname:  " + alice.fullName.get)
+  alice.surName = "Bobson"
+  println("Alice fullname:  " + alice.fullName.get)
+
 }
 
 class Assignment {
@@ -120,6 +124,11 @@ class Submission {
 class Student {
   val name: VarSynt[String] = Var("")
   val submissions: VarSynt[List[Submission]] = Var(Nil)
+
+  var surName: String = ""
+  val fullName: DependentSignal[String] = Signal {
+    name() +  " " + surName
+  }
 
   override def toString: String = name.get
 }
