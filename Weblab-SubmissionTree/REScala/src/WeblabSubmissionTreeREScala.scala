@@ -91,7 +91,7 @@ class Submission {
     assignment().map(_.children()).getOrElse(Nil).flatMap(_.submissions()).filter(_.student() == student())
   }
 
-//  val parentManual: DependentSignal[Option[Submission]] = Signal {
+//  val parent2: DependentSignal[Option[Submission]] = Signal {
 //    assignment().flatMap(_.parent()).map(_.submissions()).getOrElse(Nil).find(_.student() == student())
 //  }
 
@@ -111,6 +111,21 @@ class Submission {
     }
     oldChildren = newChildren
   })
+
+//  val children2: VarSynt[List[Submission]] = Var(Nil)
+//
+//  var oldParent: Option[Submission] = None
+//
+//  val e2: Event[Option[Submission]] = parent2.changed
+//  e2 += ((newParent: Option[Submission]) => {
+//    oldParent.foreach { o =>
+//      o.children2() = o.children2.get.filter(_ != this)
+//    }
+//    newParent.foreach { n =>
+//      n.children2() = this :: n.children2.get
+//    }
+//    oldParent = newParent
+//  })
 
   val name: DependentSignal[String] = Signal {
     val aName = assignment().map(_.name()).getOrElse("")
